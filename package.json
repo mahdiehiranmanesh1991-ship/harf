@@ -1,0 +1,6 @@
+{
+  "name": "harf-web", "version": "1.0.0", "private": true, "type": "module",
+  "description": "حرف — PWA writing + Persian voice typing with on-device memory",
+  "scripts": { "test": "node --test tests/*.test.js", "e2e": "node tests/e2e.mjs", "icons": "node scripts/icons.mjs", "serve": "python3 -m http.server 8812" },
+  "license": "MIT"
+}

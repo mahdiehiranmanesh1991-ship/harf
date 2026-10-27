@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+<meta name="theme-color" content="#120f24">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="حرف">
+<meta name="description" content="حرف — نوشتن و تایپ صوتی هوشمند با حافظه‌ی شخصی، کاملاً روی گوشی خودت">
+<title>حرف</title>
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="brand"><span class="logo" aria-hidden="true">ح</span><div><b>حرف</b><small id="greet">بنویس، بگو، کپی کن</small></div></div>
+    <div class="top-actions">
+      <button class="icon-btn" id="btn-templates" data-testid="open-templates" aria-label="عبارت‌های آماده">📜</button>
+      <button class="icon-btn" id="btn-help" aria-label="راهنما">؟</button>
+    </div>
+  </header>
+
+  <main>
+    <!-- WRITE -->
+    <section class="screen active" id="s-write" data-screen="write">
+      <div class="editor-card">
+        <textarea id="editor" data-testid="editor" dir="auto" spellcheck="true" autocapitalize="sentences" placeholder="اینجا بنویس… یا دکمه‌ی میکروفون را بزن و حرف بزن 🎙️"></textarea>
+        <div class="editor-meta"><span id="count">۰ کلمه</span><span id="saved-dot"></span></div>
+      </div>
+      <div class="quick-sugg" id="idle-sugg" data-testid="idle-sugg"></div>
+      <div class="actions">
+        <button class="btn-copy" id="btn-copy" data-testid="copy"><span class="ic">⧉</span><span id="copy-label">کپی کن</span></button>
+        <button class="btn-round" id="btn-share" data-testid="share" aria-label="اشتراک">⤴︎<small>اشتراک</small></button>
+        <button class="btn-round" id="btn-clear" data-testid="clear" aria-label="پاک کردن">✕<small>جدید</small></button>
+      </div>
+      <button class="mic-fab" id="btn-mic" data-testid="mic" aria-label="تایپ صوتی"><span class="mic-ring"></span><svg viewBox="0 0 24 24" width="34" height="34"><path fill="currentColor" d="M12 15a3.5 3.5 0 0 0 3.5-3.5v-6a3.5 3.5 0 1 0-7 0v6A3.5 3.5 0 0 0 12 15Zm6.5-3.5a.9.9 0 1 0-1.8 0 4.7 4.7 0 0 1-9.4 0 .9.9 0 1 0-1.8 0 6.5 6.5 0 0 0 5.6 6.43V20H8.6a.9.9 0 1 0 0 1.8h6.8a.9.9 0 1 0 0-1.8h-2.5v-2.07a6.5 6.5 0 0 0 5.6-6.43Z"/></svg></button>
+      <p class="engine-hint" id="engine-hint"></p>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="screen" id="s-history" data-screen="history">
+      <h2>تاریخچه</h2>
+      <input class="search" id="hist-search" data-testid="hist-search" type="search" placeholder="جستجو در متن‌های قبلی…">
+      <div id="hist-list" class="list"></div>
+    </section>
+
+    <!-- MEMORY -->
+    <section class="screen" id="s-memory" data-screen="memory">
+      <h2>حافظه‌ی کلمات</h2>
+      <p class="muted">«حرف» از متن‌هایی که کپی یا ذخیره می‌کنی یاد می‌گیرد. همه‌چیز فقط روی همین گوشی است.</p>
+      <div class="mem-stats" id="mem-stats"></div>
+      <label class="row-toggle"><span>یادگیری فعال باشد</span><input type="checkbox" id="mem-learning" data-testid="mem-learning" class="switch"></label>
+      <div class="add-row"><input id="mem-add" data-testid="mem-add" placeholder="افزودن کلمه یا عبارت…"><button class="btn-sm" id="mem-add-btn" data-testid="mem-add-btn">افزودن</button></div>
+      <input class="search" id="mem-search" data-testid="mem-search" type="search" placeholder="جستجوی کلمه…">
+      <div id="mem-list" class="list" data-testid="mem-list"></div>
+      <details class="blocked"><summary>کلمات مسدود (<span id="blocked-n">۰</span>)</summary><div id="blocked-list"></div></details>
+      <div class="btn-row"><button class="btn-sm" id="mem-export">⬇︎ خروجی پشتیبان</button><label class="btn-sm file">⬆︎ ورود پشتیبان<input type="file" id="mem-import" data-testid="mem-import" accept="application/json,.json" hidden></label><button class="btn-sm danger" id="mem-reset">پاک کردن حافظه</button></div>
+    </section>
+
+    <!-- SNIPPETS -->
+    <section class="screen" id="s-snippets" data-screen="snippets">
+      <h2>میانبرهای متنی</h2>
+      <p class="muted">میانبر را بنویس و فاصله بزن تا متن کامل جایش بنشیند. مثلاً <code>;امضا</code> یا <code>؛امضا</code></p>
+      <div id="snip-list" class="list" data-testid="snip-list"></div>
+      <button class="btn-wide" id="snip-new" data-testid="snip-new">＋ میانبر جدید</button>
+    </section>
+
+    <!-- SETTINGS -->
+    <section class="screen" id="s-settings" data-screen="settings">
+      <h2>تنظیمات</h2>
+      <div class="card">
+        <h3>🎙️ موتور تایپ صوتی</h3>
+        <div class="engines" id="engines" data-testid="engines"></div>
+        <div id="cloud-box" class="cloud-box">
+          <p class="muted">اختیاری. صدای تو برای این سرویس فرستاده می‌شود. کلید فقط روی همین گوشی ذخیره می‌شود.</p>
+          <label>آدرس سرویس<input id="cloud-base" dir="ltr" placeholder="https://api.groq.com/openai/v1"></label>
+          <label>مدل<input id="cloud-model" dir="ltr" placeholder="whisper-large-v3"></label>
+          <label>کلید API<input id="cloud-key" dir="ltr" type="password" autocomplete="off" placeholder="sk-…"></label>
+          <div class="btn-row"><button class="btn-sm" data-preset="groq">Groq</button><button class="btn-sm" data-preset="openai">OpenAI</button></div>
+        </div>
+        <label class="row-sel"><span>زبان گفتار</span><select id="voice-lang" data-testid="voice-lang"><option value="fa">فارسی</option><option value="en">English</option><option value="auto">خودکار</option></select></label>
+        <label class="row-toggle"><span>بعد از تایپ صوتی خودکار کپی شود</span><input type="checkbox" class="switch" data-set="autoCopyVoice"></label>
+      </div>
+      <div class="card">
+        <h3>✨ پاک‌سازی هوشمند متن</h3>
+        <label class="row-toggle"><span>حذف «اِم»، «اوم» و تکرارها</span><input type="checkbox" class="switch" data-set="removeFillers"></label>
+        <label class="row-toggle"><span>علامت‌گذاری گفتاری («نقطه»، «سر خط»، «علامت سوال»)</span><input type="checkbox" class="switch" data-set="fixPunctuation"></label>
+        <label class="row-toggle"><span>اصلاح ی و ک عربی و نیم‌فاصله</span><input type="checkbox" class="switch" data-set="normalizePersian"></label>
+        <label class="row-toggle"><span>اعداد فارسی (۱۲۳)</span><input type="checkbox" class="switch" data-set="persianDigits" data-testid="set-digits"></label>
+        <label class="row-toggle"><span>گسترش خودکار میانبرها</span><input type="checkbox" class="switch" data-set="autoExpand"></label>
+      </div>
+      <div class="card">
+        <h3>🎨 ظاهر</h3>
+        <div class="seg" id="theme-seg" data-testid="theme-seg"><button data-theme="auto">خودکار</button><button data-theme="dark">تیره</button><button data-theme="light">روشن</button></div>
+        <label class="row-sel"><span>اندازه‌ی متن</span><input type="range" id="font-size" min="16" max="30" step="1"></label>
+      </div>
+      <div class="card">
+        <h3>🔒 حریم خصوصی و پشتیبان</h3>
+        <p class="muted">بدون ردیاب و بدون سرور. متن‌ها، حافظه و میانبرها فقط در همین گوشی ذخیره می‌شوند.</p>
+        <div class="btn-row"><button class="btn-sm" id="all-export" data-testid="all-export">⬇︎ پشتیبان کامل</button><label class="btn-sm file">⬆︎ بازگردانی<input type="file" id="all-import" accept="application/json,.json" hidden></label></div>
+        <div class="btn-row"><button class="btn-sm" id="show-onboard">نمایش راهنمای شروع</button><button class="btn-sm danger" id="wipe">پاک کردن همه‌چیز</button></div>
+        <p class="muted tiny" id="ver"></p>
+      </div>
+    </section>
+  </main>
+
+  <nav class="tabs" id="tabs">
+    <button data-go="write" class="on" data-testid="tab-write"><span>✍️</span>نوشتن</button>
+    <button data-go="history" data-testid="tab-history"><span>🕘</span>تاریخچه</button>
+    <button data-go="memory" data-testid="tab-memory"><span>🧠</span>حافظه</button>
+    <button data-go="snippets" data-testid="tab-snippets"><span>⚡</span>میانبر</button>
+    <button data-go="settings" data-testid="tab-settings"><span>⚙️</span>تنظیمات</button>
+  </nav>
+</div>
+
+<!-- Accessory bar pinned above the iOS keyboard -->
+<div id="kbar" class="kbar" hidden data-testid="kbar">
+  <div class="sugg" id="sugg" data-testid="sugg"></div>
+  <div class="quick" id="quick">
+    <button data-ins="&#x200C;" class="zwnj" data-testid="zwnj">نیم‌فاصله</button>
+    <button data-ins="، ">،</button><button data-ins="؛ ">؛</button><button data-ins="؟ ">؟</button><button data-ins="«»" data-wrap="1">«»</button><button data-ins=". ">.</button>
+    <button id="digits-toggle" data-testid="digits-toggle">۱۲۳</button>
+    <button id="kbar-mic" class="k-mic" aria-label="میکروفون">🎙️</button>
+    <button id="kbar-copy" class="k-copy" data-testid="kbar-copy">کپی</button>
+  </div>
+  <div class="digits" id="digits" hidden></div>
+</div>
+
+<!-- Voice overlay -->
+<div id="voice" class="voice" hidden data-testid="voice">
+  <div class="voice-card">
+    <div class="voice-engine" id="voice-engine"></div>
+    <canvas id="wave" width="680" height="220" data-testid="wave"></canvas>
+    <div class="voice-time" id="voice-time">۰:۰۰</div>
+    <div class="voice-status" id="voice-status" data-testid="voice-status">در حال گوش دادن…</div>
+    <div class="voice-partial" id="voice-partial"></div>
+    <div class="progress" id="voice-progress" hidden><i></i></div>
+    <div class="voice-btns">
+      <button class="v-cancel" id="voice-cancel" data-testid="voice-cancel">لغو</button>
+      <button class="v-stop" id="voice-stop" data-testid="voice-stop"><i></i><span>تمام</span></button>
+    </div>
+  </div>
+</div>
+
+<div id="sheet" class="sheet" hidden><div class="sheet-card" id="sheet-card"></div></div>
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+<script type="module" src="js/app.js"></script>
+</body>
+</html>
