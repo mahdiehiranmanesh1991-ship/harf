@@ -9,7 +9,7 @@ import { Recorder } from './audio.js';
 import { whisper, webSpeechAvailable, webSpeechSession, cloudTranscribe } from './voice.js';
 import { MODELS, isModelCached, downloadModel, deleteModel } from './model-cache.js';
 
-export const APP_VERSION = '1.0.0';
+export const APP_VERSION = '1.0.1';
 const $ = (s, r = document) => r.querySelector(s); const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const BASE = new URL('./', location.href).href;
 const fa = (n) => toPersianDigits(String(n));
